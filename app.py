@@ -75,5 +75,41 @@ def jugadores_positivos():
     filtrados = filtrar_jugadores_positivos(jugadores)
     return jsonify(filtrados)
 
+
+# Endpoint para hacer una puja por un jugador
+from flask import request
+
+@app.route("/bid", methods=["POST"])
+def bid():
+    credenciales, error = login()
+    if error or not credenciales["token"]:
+        return jsonify({"error": "No se pudo autenticar"}), 401
+
+    data = request.get_json()
+    player_id = data.get("player_id")
+    player_slug = data.get("player_slug")
+    price = data.get("price")
+    is_clause = data.get("isClause", False)
+
+    if not all([player_id, player_slug, price]):
+        return jsonify({"error": "Faltan datos obligatorios"}), 400
+
+    payload = {
+        "header": {
+            "token": credenciales["token"],
+            "userid": credenciales["userid"]
+        },
+        "query": {
+            "championshipId": CHAMPIONSHIP_ID,
+            "userteamId": USERTEAM_ID,
+            "player_id": player_id,
+            "player_slug": player_slug,
+            "price": price,
+            "isClause": is_clause
+        }
+    }
+    resp = session.post("https://api.futmondo.com/1/market/bid", json=payload, headers=HEADERS)
+    return jsonify(resp.json())
+
 if __name__ == "__main__":
     app.run(debug=True)
