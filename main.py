@@ -70,7 +70,28 @@ if login_resp.status_code == 200:
         market_headers = headers.copy()
         market_headers["Content-Type"] = "application/json; charset=utf-8"
         resp = session.post(market_url, json=market_payload, headers=market_headers)
-        print("Jugadores del mercado:")
-        print(resp.text)
+        print("Jugadores con cambio positivo:")
+        data = resp.json()
+        jugadores = data.get("answer", [])
+        jugadores_positivos = []
+        for jugador in jugadores:
+            if isinstance(jugador, dict) and jugador.get("change", 0) > 0:
+                nombre = jugador.get("name", "")
+                equipo = jugador.get("team", "")
+                cambio = jugador.get("change", 0)
+                valor_actual = jugador.get("value", 0)
+                valor_anterior = valor_actual - cambio if valor_actual else 0
+                porcentaje = (cambio / valor_anterior * 100) if valor_anterior else 0
+                jugadores_positivos.append({
+                    "nombre": nombre,
+                    "equipo": equipo,
+                    "valor_actual": valor_actual,
+                    "cambio": cambio,
+                    "porcentaje": porcentaje
+                })
+        # Ordenar de mayor a menor porcentaje
+        jugadores_positivos.sort(key=lambda x: x["porcentaje"], reverse=True)
+        for j in jugadores_positivos:
+            print(f"{j['nombre']} ({j['equipo']}) - Valor actual: {j['valor_actual']} - Cambio: {j['cambio']} ({j['porcentaje']:.2f}%)")
 else:
     print("Error en el login:", login_resp.text)
