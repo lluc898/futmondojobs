@@ -1,11 +1,10 @@
 from config import CHAMPIONSHIP_ID, USERTEAM_ID
 from utils.session import session, HEADERS
 
-def realizar_puja(token, userid, player_id, player_slug, price, is_clause):
+def realizar_puja(token, player_id, player_slug, price, is_clause):
     payload = {
         "header": {
-            "token": token,
-            "userid": userid
+            "token": token
         },
         "query": {
             "championshipId": CHAMPIONSHIP_ID,

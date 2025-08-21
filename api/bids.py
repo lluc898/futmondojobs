@@ -17,5 +17,5 @@ def bid():
     is_clause = data.get("isClause", False)
     if not all([player_id, player_slug, price]):
         return jsonify({"error": "Faltan datos obligatorios"}), 400
-    resultado = realizar_puja(credenciales["token"], credenciales["userid"], player_id, player_slug, price, is_clause)
+    resultado = realizar_puja(credenciales["token"], player_id, player_slug, price, is_clause)
     return jsonify(resultado)

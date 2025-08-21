@@ -10,6 +10,6 @@ def jugadores_positivos():
     credenciales, error = login()
     if error or not credenciales["token"]:
         return jsonify({"error": "No se pudo autenticar"}), 401
-    jugadores = obtener_jugadores(credenciales["token"], credenciales["userid"])
+    jugadores = obtener_jugadores(credenciales["token"])
     filtrados = filtrar_jugadores_positivos(jugadores)
     return jsonify(filtrados)

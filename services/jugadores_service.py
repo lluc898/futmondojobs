@@ -1,9 +1,9 @@
 from config import CHAMPIONSHIP_ID, USERTEAM_ID
 from utils.session import session, HEADERS
 
-def obtener_jugadores(token, userid):
+def obtener_jugadores(token):
     market_payload = {
-        "header": {"token": token, "userid": userid},
+        "header": {"token": token},
         "query": {
             "championshipId": CHAMPIONSHIP_ID,
             "userteamId": USERTEAM_ID,
@@ -26,7 +26,9 @@ def filtrar_jugadores_positivos(jugadores):
                 "equipo": j.get("team", ""),
                 "valor_actual": valor_actual,
                 "cambio": cambio,
-                "porcentaje": porcentaje
+                "porcentaje": porcentaje,
+                "player_id": j.get("id", ""),
+                "player_slug": j.get("slug", "")
             })
     positivos.sort(key=lambda x: x["porcentaje"], reverse=True)
     return positivos
