@@ -8,8 +8,8 @@ import time
 def login():
     token, expires_at = get_token()
     now = int(time.time())
-    if token and expires_at and expires_at > now:
-        return {"token": token}, None
+    # if token and expires_at and expires_at > now:
+    #     return {"token": token}, None
 
     payload = {
         "header": {"token": None},
