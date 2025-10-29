@@ -1,0 +1,17 @@
+version: '3.8'
+
+networks:
+  npm-network:
+    external: true  # usa la red que ya creaste para NPM
+
+services:
+  futmondojobs:
+    build: .
+    container_name: futmondojobs
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    restart: always
+    networks:
+      - npm-network
