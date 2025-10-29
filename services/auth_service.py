@@ -9,6 +9,7 @@ import logging
 def login():
     # Validaciones básicas de entorno
     if not MAIL or not PWD:
+        logging.warning("Login: faltan variables MAIL o PWD en el entorno del contenedor")
         return None, "Faltan MAIL o PWD en variables de entorno"
 
     token, expires_at = get_token()
@@ -29,7 +30,7 @@ def login():
             timeout=20,
         )
     except Exception as e:
-        logging.exception("Error haciendo login contra Futmondo")
+        logging.exception("Login: error de red haciendo request a Futmondo")
         return None, f"Error de red en login: {e}"
 
     if resp.status_code != 200:
@@ -37,11 +38,13 @@ def login():
             body = resp.text
         except Exception:
             body = "<sin cuerpo>"
+        logging.warning("Login: respuesta HTTP no 200: %s, body: %s", resp.status_code, body[:300])
         return None, f"Error en login HTTP {resp.status_code}: {body[:200]}"
 
     try:
         data = resp.json()
     except Exception:
+        logging.warning("Login: la respuesta de Futmondo no es JSON")
         return None, "Respuesta de login no es JSON"
 
     mobile = data.get("answer", {}).get("mobile", {})
@@ -53,6 +56,7 @@ def login():
             or data.get("answer", {}).get("message")
             or "Login sin token"
         )
+        logging.warning("Login: respuesta sin token. Mensaje: %s; payload keys: %s", msg, list(data.keys()))
         return None, msg
 
     # Guardar token y expiración (asumimos 1h de validez)
@@ -60,7 +64,7 @@ def login():
     try:
         save_token(token, expires_at)
     except Exception:
-        logging.exception("No se pudo guardar el token en MongoDB")
+        logging.exception("Login: no se pudo guardar el token en MongoDB (no bloqueante)")
 
     return {"token": token}, None
 
@@ -68,4 +72,3 @@ def login():
 def get_token_doc():
     from utils.mongo import tokens_collection
     return tokens_collection.find_one({"_id": "login_token"})
-
