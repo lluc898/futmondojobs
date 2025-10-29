@@ -56,13 +56,22 @@ def login():
             or data.get("answer", {}).get("message")
             or "Login sin token"
         )
-        logging.warning("Login: respuesta sin token. Mensaje: %s; payload keys: %s", msg, list(data.keys()))
+        try:
+            logging.warning(
+                "Login: respuesta sin token. Mensaje: %s; keys=%s; answer=%s",
+                msg,
+                list(data.keys()),
+                str(data.get("answer"))[:400],
+            )
+        except Exception:
+            logging.warning("Login: respuesta sin token y no se pudo serializar el body")
         return None, msg
 
     # Guardar token y expiración (asumimos 1h de validez)
     expires_at = now + 3600
     try:
         save_token(token, expires_at)
+        logging.info("Login: token obtenido y guardado en cache")
     except Exception:
         logging.exception("Login: no se pudo guardar el token en MongoDB (no bloqueante)")
 
