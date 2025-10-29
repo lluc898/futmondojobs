@@ -11,7 +11,9 @@ import socket
 def login():
     # Validaciones básicas de entorno
     if not MAIL or not PWD:
-        logging.warning("Login: faltan variables MAIL o PWD en el entorno del contenedor")
+        logging.warning(
+            "Login: faltan variables MAIL o PWD (recuerda usar FUTMONDO_PWD/FM_PWD en contenedores; PWD suele ser la ruta del proceso)"
+        )
         return None, "Faltan MAIL o PWD en variables de entorno"
 
     token, expires_at = get_token()
