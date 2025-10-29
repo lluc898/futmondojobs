@@ -4,6 +4,8 @@ from utils.mongo import get_token, save_token
 import requests
 import time
 import logging
+import os
+import socket
 
 
 def login():
@@ -18,7 +20,12 @@ def login():
     #     return {"token": token}, None
 
     payload = {
-        "header": {"token": None},
+        "header": {
+            "token": None,
+            "device": "android",
+            "deviceId": os.getenv("DEVICE_ID", f"docker-{socket.gethostname()}"),
+            "lang": "es",
+        },
         "query": {"mail": MAIL, "pwd": PWD}
     }
 
@@ -58,10 +65,12 @@ def login():
         )
         try:
             logging.warning(
-                "Login: respuesta sin token. Mensaje: %s; keys=%s; answer=%s",
+                "Login: respuesta sin token. Mensaje: %s; keys=%s; answer=%s; payload=%s; headers-UA=%s",
                 msg,
                 list(data.keys()),
                 str(data.get("answer"))[:400],
+                str(payload)[:300],
+                HEADERS.get("User-Agent"),
             )
         except Exception:
             logging.warning("Login: respuesta sin token y no se pudo serializar el body")
