@@ -32,3 +32,29 @@ def filtrar_jugadores_positivos(jugadores):
             })
     positivos.sort(key=lambda x: x["porcentaje"], reverse=True)
     return positivos
+
+def obtener_informacion_userteam(token):
+    """Obtiene información del userteam: presupuesto, puja máxima, pujas activas, etc."""
+    payload = {
+        "header": {"token": token},
+        "query": {
+            "championshipId": CHAMPIONSHIP_ID,
+            "userteamId": USERTEAM_ID,
+            "type": "market"
+        }
+    }
+    resp = session.post("https://api.futmondo.com/1/userteam/information", json=payload, headers=HEADERS)
+    data = resp.json()
+    answer = data.get("answer", {})
+    
+    budget = answer.get("budget", 0)
+    max_bid = answer.get("maxBid", 0)
+    withheld = answer.get("withheld", 0)
+    balance = budget - withheld
+    
+    return {
+        "budget": budget,
+        "max_bid": max_bid,
+        "withheld": withheld,
+        "balance": balance
+    }

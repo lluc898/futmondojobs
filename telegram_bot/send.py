@@ -2,7 +2,7 @@ import asyncio
 from flask import Blueprint, jsonify, request
 from telegram import Bot, Update, InlineKeyboardMarkup, InlineKeyboardButton
 import requests
-from services.jugadores_service import obtener_jugadores, filtrar_jugadores_positivos
+from services.jugadores_service import obtener_jugadores, filtrar_jugadores_positivos, obtener_informacion_userteam
 from services.auth_service import login
 from config import TOKEN_BOT as TOKEN, USER_ID_TELEGRAM as USER_ID
 
@@ -20,6 +20,26 @@ def format_miles(value):
         return f"{n:,}".replace(",", ".")
     except Exception:
         return value
+
+def format_budget_message(userteam_info):
+    """Formatea el mensaje de presupuesto con información financiera del equipo."""
+    budget = userteam_info.get("budget", 0)
+    max_bid = userteam_info.get("max_bid", 0)
+    withheld = userteam_info.get("withheld", 0)
+    balance = userteam_info.get("balance", 0)
+    
+    # Determinar emoji del balance
+    balance_emoji = "🟢" if balance >= 0 else "🔴"
+    
+    return (
+        "☀️ <b>¡Buenos días!</b> ☀️\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        f"💰 <b>Dinero disponible:</b> {format_miles(budget)}\n"
+        f"🔒 <b>Pujas totales:</b> {format_miles(withheld)}\n"
+        f"{balance_emoji} <b>Balance:</b> {format_miles(balance)}\n"
+        f"🎯 <b>Puja máxima:</b> {format_miles(max_bid)}\n"
+        "━━━━━━━━━━━━━━━━━━━━"
+    )
 
 def format_player_message(player):
     nombre = player.get('nombre', 'Desconocido')
@@ -52,6 +72,20 @@ async def send_message():
     if error or not credenciales["token"]:
         print("No se pudo autenticar")
         return
+    
+    # Obtener información del userteam y enviar mensaje de buenos días
+    try:
+        userteam_info = obtener_informacion_userteam(credenciales["token"])
+        budget_message = format_budget_message(userteam_info)
+        await bot.send_message(
+            chat_id=USER_ID,
+            text=budget_message,
+            parse_mode="HTML",
+        )
+        await asyncio.sleep(0.5)
+    except Exception as e:
+        print(f"Error obteniendo/enviando información de presupuesto: {e}")
+    
     # Obtener jugadores disponibles
     available_players = obtener_jugadores(credenciales["token"])
     # Filtrar jugadores positivos
@@ -248,6 +282,22 @@ def telegram_webhook():
                             },
                             timeout=10,
                         )
+                        
+                        # Enviar información actualizada del presupuesto después de la puja
+                        try:
+                            userteam_info = obtener_informacion_userteam(credenciales["token"])
+                            budget_message = format_budget_message(userteam_info)
+                            requests.post(
+                                f"https://api.telegram.org/bot{token_telegram}/sendMessage",
+                                json={
+                                    "chat_id": chat_id,
+                                    "text": budget_message,
+                                    "parse_mode": "HTML",
+                                },
+                                timeout=10,
+                            )
+                        except Exception as e_budget:
+                            print(f"Error enviando presupuesto actualizado: {e_budget}")
                 except Exception:
                     pass
 
