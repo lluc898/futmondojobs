@@ -44,24 +44,38 @@ def format_player_message(player):
     nombre = player.get('nombre', 'Desconocido')
     equipo = player.get('equipo', '—')
     valor_actual = player.get('valor_actual', '—')
-    cambio = player.get('cambio', '—')
+    cambio = player.get('cambio', 0)
     porcentaje = player.get('porcentaje', 0)
 
     # Formatear valores numéricos con puntos para miles
     valor_actual_fmt = format_miles(valor_actual)
-    cambio_fmt = format_miles(cambio)
+    cambio_fmt = format_miles(abs(cambio))  # Valor absoluto para el formato
 
     try:
         porcentaje_text = f"{porcentaje:.2f}%"
     except Exception:
         porcentaje_text = f"{porcentaje}%"
+    
+    # Determinar emoji y signo según si es positivo, negativo o neutro
+    if cambio > 0:
+        emoji = "🔥"
+        titulo = "Jugador en tendencia"
+        signo = "+"
+    elif cambio < 0:
+        emoji = "📉"
+        titulo = "Jugador bajando"
+        signo = "-"
+    else:
+        emoji = "➖"
+        titulo = "Jugador estable"
+        signo = ""
 
     return (
-        "🔥 <b>Jugador en tendencia</b>\n"
+        f"{emoji} <b>{titulo}</b>\n"
         f"👤 <b>{nombre}</b>\n"
         f"🏟️ <i>{equipo}</i>\n"
         f"💰 Valor actual: <b>{valor_actual_fmt}</b>\n"
-        f"📈 Cambio: <b>+{cambio_fmt}</b> (<b>+{porcentaje_text}</b>)"
+        f"📈 Cambio: <b>{signo}{cambio_fmt}</b> (<b>{signo}{porcentaje_text}</b>)"
     )
 
 async def send_message():
@@ -87,20 +101,20 @@ async def send_message():
     
     # Obtener jugadores disponibles
     available_players = obtener_jugadores(credenciales["token"])
-    # Filtrar jugadores positivos
-    positive_players = filtrar_jugadores_positivos(available_players)
+    # Ordenar todos los jugadores por cambio de valor (mayor a menor)
+    all_players = filtrar_jugadores_positivos(available_players)
 
-    if not positive_players:
+    if not all_players:
         user_telegram = USER_ID
         await bot.send_message(
             chat_id=user_telegram,
-            text="😴 No hay jugadores con cambios positivos en este momento.",
+            text="😴 No hay jugadores disponibles en este momento.",
             parse_mode="HTML",
         )
         return
 
     # Enviar cada jugador en un mensaje separado
-    for player in positive_players:
+    for player in all_players:
         message_text = format_player_message(player)
         player_id = player.get("player_id")
         keyboard = InlineKeyboardMarkup([

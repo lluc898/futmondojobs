@@ -14,14 +14,17 @@ def obtener_jugadores(token):
     return resp.json().get("answer", [])
 
 def filtrar_jugadores_positivos(jugadores):
-    positivos = []
+    """Procesa y ordena TODOS los jugadores por cambio de valor (de mayor a menor).
+    Ya no filtra solo positivos, devuelve todos ordenados por porcentaje descendente.
+    """
+    procesados = []
     for j in jugadores:
-        if isinstance(j, dict) and j.get("change", 0) > 0:
+        if isinstance(j, dict):
             valor_actual = j.get("value", 0)
             cambio = j.get("change", 0)
             valor_anterior = valor_actual - cambio if valor_actual else 0
             porcentaje = (cambio / valor_anterior * 100) if valor_anterior else 0
-            positivos.append({
+            procesados.append({
                 "nombre": j.get("name", ""),
                 "equipo": j.get("team", ""),
                 "valor_actual": valor_actual,
@@ -30,8 +33,9 @@ def filtrar_jugadores_positivos(jugadores):
                 "player_id": j.get("id", ""),
                 "player_slug": j.get("slug", "")
             })
-    positivos.sort(key=lambda x: x["porcentaje"], reverse=True)
-    return positivos
+    # Ordenar de mayor a menor porcentaje (positivos primero, luego negativos)
+    procesados.sort(key=lambda x: x["porcentaje"], reverse=True)
+    return procesados
 
 def obtener_informacion_userteam(token):
     """Obtiene información del userteam: presupuesto, puja máxima, pujas activas, etc."""
