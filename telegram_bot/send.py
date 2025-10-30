@@ -32,7 +32,6 @@ def format_budget_message(userteam_info):
     balance_emoji = "🟢" if balance >= 0 else "🔴"
     
     return (
-        "☀️ <b>¡Buenos días!</b> ☀️\n"
         "━━━━━━━━━━━━━━━━━━━━\n"
         f"💰 <b>Dinero disponible:</b> {format_miles(budget)}\n"
         f"🔒 <b>Pujas totales:</b> {format_miles(withheld)}\n"
