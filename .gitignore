@@ -1,6 +1,7 @@
 data.py
 .env
 launch.json
+.github/
 
 # Archivos compilados de Python
 __pycache__/
