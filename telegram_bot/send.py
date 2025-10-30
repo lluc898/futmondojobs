@@ -11,12 +11,26 @@ send_bp = Blueprint('send', __name__)
 # Coloca tu token y tu user ID aquí
 # token and user_id should be set in config or environment variables
 
+def format_miles(value):
+    """Formatea un número con separador de miles con puntos (1.000.000).
+    Si no es numérico, devuelve el valor tal cual.
+    """
+    try:
+        n = int(value)
+        return f"{n:,}".replace(",", ".")
+    except Exception:
+        return value
+
 def format_player_message(player):
     nombre = player.get('nombre', 'Desconocido')
     equipo = player.get('equipo', '—')
     valor_actual = player.get('valor_actual', '—')
     cambio = player.get('cambio', '—')
     porcentaje = player.get('porcentaje', 0)
+
+    # Formatear valores numéricos con puntos para miles
+    valor_actual_fmt = format_miles(valor_actual)
+    cambio_fmt = format_miles(cambio)
 
     try:
         porcentaje_text = f"{porcentaje:.2f}%"
@@ -27,8 +41,8 @@ def format_player_message(player):
         "🔥 <b>Jugador en tendencia</b>\n"
         f"👤 <b>{nombre}</b>\n"
         f"🏟️ <i>{equipo}</i>\n"
-        f"💰 Valor actual: <b>{valor_actual}</b>\n"
-        f"📈 Cambio: <b>+{cambio}</b> (<b>+{porcentaje_text}</b>)"
+        f"💰 Valor actual: <b>{valor_actual_fmt}</b>\n"
+        f"📈 Cambio: <b>+{cambio_fmt}</b> (<b>+{porcentaje_text}</b>)"
     )
 
 async def send_message():
@@ -188,8 +202,28 @@ def telegram_webhook():
                         pass
                     return jsonify({"ok": True})
 
-                # Notificar al usuario
-                msg = f"Puja {'modificada' if existing_bid_id else 'realizada'}: +{pct}% por {price}"
+                # Notificar al usuario (mensaje vistoso y más destacado)
+                formatted_price = format_miles(price)
+                accion = 'modificada' if existing_bid_id else 'realizada'
+                emoji_accion = '♻️' if existing_bid_id else '✅'
+                nombre_jugador = (
+                    (jugador.get('name') or jugador.get('nombre')) if isinstance(jugador, dict) else None
+                ) or 'Jugador'
+                equipo_jugador = (
+                    (jugador.get('team') or jugador.get('equipo')) if isinstance(jugador, dict) else None
+                ) or ''
+
+                # Toast breve para el botón (sin HTML)
+                msg = f"Puja {accion}: +{pct}% por {formatted_price}"
+
+                # Mensaje enriquecido para el chat con HTML
+                msg_html = (
+                    f"{emoji_accion} <b>Puja {accion.upper()}</b> {emoji_accion}\n"
+                    f"👤 <b>{nombre_jugador}</b>"
+                    + (f" — <i>{equipo_jugador}</i>\n" if equipo_jugador else "\n")
+                    + f"📈 Incremento: <b>+{pct}%</b>\n"
+                    + f"💶 Importe: <b>{formatted_price}</b>"
+                )
                 try:
                     # Toast del botón
                     requests.post(
@@ -208,7 +242,8 @@ def telegram_webhook():
                             f"https://api.telegram.org/bot{token_telegram}/sendMessage",
                             json={
                                 "chat_id": chat_id,
-                                "text": msg,
+                                "text": msg_html,
+                                "parse_mode": "HTML",
                                 "disable_web_page_preview": True,
                             },
                             timeout=10,
