@@ -1,169 +1,169 @@
 <div align="center">
 
-# ⚽ Futmondo Telegram Bot
+# ⚽ Bot de Telegram para Futmondo
 
-### Manage your Futmondo league directly from Telegram
+### Gestiona tu liga de Futmondo directamente desde Telegram
 
-Market alerts, team finances, interactive bids, player sales, transfers and scheduled daily digests — all from a private Telegram bot.
+Alertas de mercado, finanzas del equipo, pujas interactivas, venta de jugadores, fichajes y resúmenes diarios programados, todo desde un bot privado de Telegram.
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white)](https://core.telegram.org/bots)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
-[![Tests](https://img.shields.io/badge/tests-10%20passed-success)](#quality-and-testing)
+[![Tests](https://img.shields.io/badge/tests-10%20superados-success)](#calidad-y-pruebas)
 
 </div>
 
 > [!IMPORTANT]
-> Futmondo Telegram Bot is an unofficial community project. Futmondo does not publish these endpoints as a stable public API, so upstream changes may require maintenance.
+> Bot de Telegram para Futmondo es un proyecto comunitario no oficial. Futmondo no publica estos endpoints como una API pública estable, por lo que futuros cambios en su servicio podrían requerir mantenimiento.
 
-## What is it?
+## ¿Qué es este proyecto?
 
-**Futmondo Telegram Bot** connects a Futmondo championship to a private Telegram chat. Instead of opening the Futmondo application repeatedly, you can inspect the market, review your budget, place or update bids with inline buttons, manage player sales and receive automatic cron notifications.
+**Bot de Telegram para Futmondo** conecta un campeonato de Futmondo con un chat privado de Telegram. En lugar de abrir constantemente la aplicación de Futmondo, permite consultar el mercado, revisar el presupuesto, realizar o modificar pujas con botones, gestionar la venta de jugadores y recibir notificaciones automáticas mediante cron.
 
-The project is inspired by [vicenteqa/futmondo-utils](https://github.com/vicenteqa/futmondo-utils), with its most useful workflows consolidated into a maintainable, tested Python service.
+El proyecto está inspirado en [vicenteqa/futmondo-utils](https://github.com/vicenteqa/futmondo-utils), integrando sus flujos más útiles en un servicio Python mantenible, seguro y probado.
 
-## Highlights
+## Funcionalidades principales
 
-| Area | Capabilities |
+| Área | Funcionalidades |
 | --- | --- |
-| 📲 Telegram | Private command bot, command menu, inline bid buttons and webhook verification |
-| 📈 Market | Sort by value change, price, bids, average or recent form |
-| 💰 Finances | Budget, withheld money, available balance and maximum bid |
-| 🔨 Trading | Place/update bids and explicitly create or cancel player sales |
-| 📰 League | Transfers, teams, rosters, active championships and last connections |
-| ⏰ Automation | Independent market and transfer digests using configurable cron expressions |
-| 🔐 Security | Chat allowlist, Telegram secret, protected write API and protected cron hooks |
-| 🐳 Operations | Docker image, Docker Compose, health check and Nginx Proxy Manager support |
+| 📲 Telegram | Bot privado, menú de comandos, botones de puja y verificación del webhook |
+| 📈 Mercado | Ordenación por cambio de valor, precio, pujas, media o estado de forma |
+| 💰 Finanzas | Presupuesto, dinero retenido, saldo disponible y puja máxima |
+| 🔨 Operaciones | Crear o modificar pujas y poner o retirar jugadores del mercado |
+| 📰 Liga | Fichajes, equipos, plantillas, campeonatos activos y últimas conexiones |
+| ⏰ Automatización | Resúmenes independientes de mercado y fichajes mediante expresiones cron |
+| 🔐 Seguridad | Lista de chats permitidos, secreto de Telegram, API y cron protegidos |
+| 🐳 Despliegue | Imagen Docker, Docker Compose, health check y soporte para Nginx Proxy Manager |
 
-The client also discovers the Futmondo account user ID automatically. If configured championship IDs become stale and the account has exactly one active championship, the current championship and team are selected automatically.
+El cliente descubre automáticamente el ID de usuario de Futmondo. Si los IDs configurados del campeonato quedan obsoletos y la cuenta solo tiene un campeonato activo, también selecciona automáticamente el campeonato y el equipo actuales.
 
-## Telegram commands
+## Comandos de Telegram
 
-| Command | Description |
+| Comando | Descripción |
 | --- | --- |
-| `/market [change\|bids\|price\|form\|average]` | Show and sort the current market |
-| `/wanted` | Show rising players currently owned by the CPU |
-| `/budget` | Show team finances and maximum bid |
-| `/transfers` | Show today's championship transfers |
-| `/team <name>` | Find a team and display its roster |
-| `/connections` | Show the most recent manager connections |
-| `/bid <player_id> <amount>` | Place or update a bid |
-| `/sales` | Show your active player sales |
-| `/sell <player_id> <price>` | Put a player on the market |
-| `/cancel_sale <player_id>` | Remove a player from the market |
-| `/help` | Display the command guide |
+| `/market [change\|bids\|price\|form\|average]` | Muestra y ordena el mercado actual |
+| `/wanted` | Muestra jugadores en subida que pertenecen a la CPU |
+| `/budget` | Muestra las finanzas del equipo y la puja máxima |
+| `/transfers` | Muestra los fichajes de hoy en el campeonato |
+| `/team <nombre>` | Busca un equipo y muestra su plantilla |
+| `/connections` | Muestra las conexiones más recientes de los participantes |
+| `/bid <player_id> <importe>` | Realiza o modifica una puja |
+| `/sales` | Muestra tus jugadores actualmente en venta |
+| `/sell <player_id> <precio>` | Pone un jugador en el mercado |
+| `/cancel_sale <player_id>` | Retira un jugador del mercado |
+| `/help` | Muestra la ayuda del bot |
 
-Market messages include **Bid +5%**, **Bid +10%** and **Bid +15%** buttons. Telegram update IDs are deduplicated so webhook retries do not repeat a trading action.
+Los mensajes del mercado incluyen botones para **pujar +5 %**, **pujar +10 %** y **pujar +15 %**. Los identificadores de actualización de Telegram se deduplican para evitar que un reintento del webhook repita una operación.
 
-## Architecture
+## Arquitectura
 
 ```mermaid
 flowchart LR
-    U[Telegram user] -->|commands and buttons| TG[Telegram Bot API]
-    TG -->|verified webhook| WEB[Flask + Gunicorn]
-    WEB --> SVC[Market service]
-    CRON[APScheduler] -->|daily jobs| SVC
-    SVC --> FM[Futmondo API]
+    U[Usuario de Telegram] -->|comandos y botones| TG[API de Telegram Bot]
+    TG -->|webhook verificado| WEB[Flask + Gunicorn]
+    WEB --> SVC[Servicio de mercado]
+    CRON[APScheduler] -->|tareas diarias| SVC
+    SVC --> FM[API de Futmondo]
     SVC --> TG
-    WEB -->|optional token cache| DB[(MongoDB)]
+    WEB -->|caché opcional del token| DB[(MongoDB)]
 ```
 
-Docker Compose runs two processes from the same image:
+Docker Compose ejecuta dos procesos independientes usando la misma imagen:
 
-- `futmondojobs`: Flask/Gunicorn API and Telegram webhook.
-- `scheduler`: a single APScheduler process for recurring notifications.
+- `futmondojobs`: API Flask/Gunicorn y webhook de Telegram.
+- `scheduler`: un único proceso APScheduler para las notificaciones programadas.
 
-Cron is deliberately kept outside Gunicorn so multiple web threads cannot schedule duplicate digests.
+El cron se ejecuta fuera de Gunicorn para impedir que los hilos del servidor web programen resúmenes duplicados.
 
-## Production deployment
+## Despliegue en producción
 
-### 1. Requirements
+### 1. Requisitos
 
-- A server with Docker Engine and Docker Compose v2.
-- A Telegram bot token created with [@BotFather](https://t.me/BotFather) using `/newbot`.
-- Your Telegram numeric chat ID.
-- A Futmondo account with an active championship.
-- A public HTTPS domain for Telegram webhooks.
-- An existing Docker network named `npm-network` when using the included Compose file.
+- Un servidor con Docker Engine y Docker Compose v2.
+- Un token de bot de Telegram creado con [@BotFather](https://t.me/BotFather) mediante `/newbot`.
+- El ID numérico de tu chat de Telegram.
+- Una cuenta de Futmondo con al menos un campeonato activo.
+- Un dominio público con HTTPS para el webhook de Telegram.
+- Una red Docker llamada `npm-network` para utilizar el archivo Compose incluido.
 
-### 2. Clone the repository
+### 2. Clonar el repositorio
 
 ```bash
 git clone https://github.com/lluc898/futmondojobs.git
 cd futmondojobs
 ```
 
-Create the proxy network if Nginx Proxy Manager has not created it already:
+Si Nginx Proxy Manager todavía no ha creado la red, créala manualmente:
 
 ```bash
 docker network create npm-network
 ```
 
-### 3. Configure environment variables
+### 3. Configurar las variables de entorno
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env`:
+Edita `.env`:
 
 ```dotenv
 # Futmondo
 FUTMONDO_EMAIL=manager@example.com
-FUTMONDO_PASSWORD=replace-me
+FUTMONDO_PASSWORD=cambia-esta-contraseña
 FUTMONDO_CHAMPIONSHIP_ID=
 FUTMONDO_TEAM_ID=
 
 # Telegram
-TELEGRAM_BOT_TOKEN=123456789:replace-me
+TELEGRAM_BOT_TOKEN=123456789:cambia-este-token
 TELEGRAM_CHAT_ID=123456789
 TELEGRAM_ALLOWED_CHAT_IDS=123456789
-TELEGRAM_WEBHOOK_SECRET=replace-with-a-long-random-value
+TELEGRAM_WEBHOOK_SECRET=sustituye-por-un-valor-aleatorio-largo
 
-# Protected HTTP actions
-API_KEY=replace-with-a-long-random-value
-CRON_SECRET=replace-with-a-long-random-value
+# Acciones HTTP protegidas
+API_KEY=sustituye-por-un-valor-aleatorio-largo
+CRON_SECRET=sustituye-por-un-valor-aleatorio-largo
 
-# Scheduled notifications (Europe/Madrid)
+# Notificaciones programadas en Europe/Madrid
 TZ=Europe/Madrid
 MARKET_DIGEST_CRON=0 7 * * *
 TRANSFERS_DIGEST_CRON=45 7 * * *
 MARKET_PLAYER_LIMIT=20
 
-# Optional shared token cache
+# Caché compartida opcional para el token
 MONGODB_URI=
 ```
 
-`FUTMONDO_CHAMPIONSHIP_ID` and `FUTMONDO_TEAM_ID` may be left empty when the account has exactly one active championship. They should be set explicitly when the account has several.
+`FUTMONDO_CHAMPIONSHIP_ID` y `FUTMONDO_TEAM_ID` pueden dejarse vacíos cuando la cuenta solo tiene un campeonato activo. Si existen varios campeonatos, deben configurarse explícitamente.
 
-Generate secrets on Linux:
+Genera secretos seguros en Linux:
 
 ```bash
 openssl rand -hex 32
 ```
 
-Or with PowerShell:
+O mediante PowerShell:
 
 ```powershell
 [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32)).ToLower()
 ```
 
-Before registering the webhook, send a message to your new bot and obtain your chat ID:
+Antes de registrar el webhook, envía un mensaje al bot recién creado y obtén el ID de tu chat:
 
 ```text
 https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/getUpdates
 ```
 
-Use the numeric value under `message.chat.id`.
+Utiliza el valor numérico que aparece en `message.chat.id`.
 
-### 4. Build and start
+### 4. Construir e iniciar los contenedores
 
 ```bash
 docker compose up -d --build
 ```
 
-Check both containers:
+Comprueba el estado de los dos contenedores:
 
 ```bash
 docker compose ps
@@ -171,7 +171,7 @@ docker compose logs --tail=100 futmondojobs scheduler
 curl http://localhost:5000/health
 ```
 
-A healthy response looks like:
+Una respuesta correcta tendrá este aspecto:
 
 ```json
 {
@@ -182,40 +182,40 @@ A healthy response looks like:
 }
 ```
 
-### 5. Configure HTTPS with Nginx Proxy Manager
+### 5. Configurar HTTPS con Nginx Proxy Manager
 
-Create a Proxy Host with these values:
+Crea un Proxy Host con los siguientes valores:
 
-| Setting | Value |
+| Ajuste | Valor |
 | --- | --- |
-| Domain | `futmondo.example.com` |
-| Scheme | `http` |
-| Forward hostname | `futmondojobs` |
-| Forward port | `5000` |
-| WebSockets | Not required |
-| SSL | Request a Let's Encrypt certificate |
-| Force SSL | Enabled |
+| Dominio | `futmondo.example.com` |
+| Esquema | `http` |
+| Hostname de destino | `futmondojobs` |
+| Puerto de destino | `5000` |
+| WebSockets | No son necesarios |
+| SSL | Solicitar un certificado de Let's Encrypt |
+| Force SSL | Activado |
 
-Both Nginx Proxy Manager and `futmondojobs` must be connected to `npm-network`.
+Nginx Proxy Manager y `futmondojobs` deben estar conectados a `npm-network`.
 
-### 6. Register the Telegram webhook
+### 6. Registrar el webhook de Telegram
 
-Once the public HTTPS URL works:
+Cuando la URL pública con HTTPS esté funcionando:
 
 ```bash
 docker compose run --rm futmondojobs \
   python manage.py set-webhook https://futmondo.example.com
 ```
 
-This registers:
+Este comando registra la siguiente dirección:
 
 ```text
 https://futmondo.example.com/telegram/webhook
 ```
 
-It also publishes the Telegram command menu. The webhook uses `TELEGRAM_WEBHOOK_SECRET`; if it is omitted, a stable private value is derived from the bot token.
+También publica el menú de comandos del bot. El webhook utiliza `TELEGRAM_WEBHOOK_SECRET`; si se deja vacío, la aplicación deriva un valor privado estable a partir del token del bot.
 
-Open Telegram and test:
+Abre Telegram y prueba los siguientes comandos:
 
 ```text
 /help
@@ -223,28 +223,28 @@ Open Telegram and test:
 /market
 ```
 
-## Cron and scheduled notifications
+## Cron y notificaciones programadas
 
-The `scheduler` container starts automatically with Compose.
+El contenedor `scheduler` se inicia automáticamente mediante Docker Compose.
 
 ```dotenv
-# Daily at 07:00
+# Todos los días a las 07:00
 MARKET_DIGEST_CRON=0 7 * * *
 
-# Daily at 07:45
+# Todos los días a las 07:45
 TRANSFERS_DIGEST_CRON=45 7 * * *
 ```
 
-Expressions use the standard five-field cron format and the timezone configured in `TZ`.
+Las expresiones usan el formato cron estándar de cinco campos y la zona horaria configurada en `TZ`.
 
-Run a digest manually:
+Ejecuta manualmente cualquiera de los resúmenes:
 
 ```bash
 docker compose exec scheduler python manage.py market-digest
 docker compose exec scheduler python manage.py transfers-digest
 ```
 
-You can alternatively call the protected hooks from an external cron provider:
+Como alternativa, un servicio cron externo puede llamar a los endpoints protegidos:
 
 ```bash
 curl -X POST \
@@ -252,27 +252,27 @@ curl -X POST \
   https://futmondo.example.com/jobs/market-digest
 ```
 
-Do not enable both scheduling methods for the same digest unless duplicate notifications are intentional.
+No actives los dos métodos para el mismo resumen salvo que quieras recibir notificaciones duplicadas.
 
-## HTTP API
+## API HTTP
 
-### Read endpoints
+### Endpoints de lectura
 
-| Method | Endpoint | Purpose |
+| Método | Endpoint | Función |
 | --- | --- | --- |
-| `GET` | `/health` | Application readiness |
-| `GET` | `/api/championships` | Active championships and own teams |
-| `GET` | `/api/players?sort=change&order=desc` | Current market |
-| `GET` | `/api/players/wanted` | Rising CPU players |
-| `GET` | `/api/budget` | Team finances |
-| `GET` | `/api/transfers?today=true` | Transfer feed |
-| `GET` | `/api/teams` | Championship teams |
-| `GET` | `/api/teams/<team_id>/players` | Team roster |
-| `GET` | `/api/sales` | Own active sales |
+| `GET` | `/health` | Estado y disponibilidad de la aplicación |
+| `GET` | `/api/championships` | Campeonatos activos y equipos propios |
+| `GET` | `/api/players?sort=change&order=desc` | Mercado actual |
+| `GET` | `/api/players/wanted` | Jugadores en subida pertenecientes a la CPU |
+| `GET` | `/api/budget` | Finanzas del equipo |
+| `GET` | `/api/transfers?today=true` | Fichajes del campeonato |
+| `GET` | `/api/teams` | Equipos del campeonato |
+| `GET` | `/api/teams/<team_id>/players` | Plantilla de un equipo |
+| `GET` | `/api/sales` | Jugadores propios actualmente en venta |
 
-### Protected write endpoints
+### Endpoints de escritura protegidos
 
-`POST /api/bids`, `POST /api/sales` and `DELETE /api/sales/<player_id>` require `API_KEY`:
+`POST /api/bids`, `POST /api/sales` y `DELETE /api/sales/<player_id>` requieren `API_KEY`:
 
 ```bash
 curl -X POST https://futmondo.example.com/api/bids \
@@ -281,9 +281,9 @@ curl -X POST https://futmondo.example.com/api/bids \
   -d '{"player_id":"player-id","price":1200000}'
 ```
 
-If `API_KEY` is empty, write endpoints remain disabled.
+Si `API_KEY` está vacío, todos los endpoints de escritura permanecen desactivados.
 
-## Updating an existing installation
+## Actualizar una instalación existente
 
 ```bash
 git pull --ff-only
@@ -293,7 +293,7 @@ docker compose run --rm futmondojobs \
 docker image prune -f
 ```
 
-## Local development
+## Desarrollo local
 
 ```bash
 python -m venv .venv
@@ -307,7 +307,7 @@ Windows:
 .venv\Scripts\ruff check .
 ```
 
-Linux/macOS:
+Linux y macOS:
 
 ```bash
 .venv/bin/pip install -r requirements-dev.txt
@@ -315,9 +315,9 @@ Linux/macOS:
 .venv/bin/ruff check .
 ```
 
-## Quality and testing
+## Calidad y pruebas
 
-External services are mocked in the automated suite. Tests never send Telegram messages or perform real bids and sales.
+Todos los servicios externos se simulan en la suite automatizada. Las pruebas nunca envían mensajes de Telegram ni realizan pujas o ventas reales.
 
 ```bash
 python -m pytest
@@ -325,56 +325,56 @@ python -m ruff check .
 python -m compileall -q .
 ```
 
-Current status: **10 tests passing**.
+Estado actual: **10 pruebas superadas**.
 
-## Security notes
+## Recomendaciones de seguridad
 
-- Never commit `.env`; it is already ignored by Git.
-- Restrict `TELEGRAM_ALLOWED_CHAT_IDS` to trusted chats.
-- Use long random values for all secrets.
-- Keep bid and sale endpoints behind HTTPS.
-- Telegram API errors are sanitized so the bot token cannot leak into logs.
-- MongoDB is optional. When used, restrict network access and create a least-privilege user.
-- Trading actions are explicit. The scheduler only sends notifications and never buys or sells automatically.
+- Nunca subas `.env` al repositorio; ya está excluido mediante `.gitignore`.
+- Limita `TELEGRAM_ALLOWED_CHAT_IDS` únicamente a chats de confianza.
+- Utiliza valores largos y aleatorios para todos los secretos.
+- Mantén los endpoints de pujas y ventas detrás de HTTPS.
+- Los errores de Telegram se limpian para impedir que el token aparezca en los logs.
+- MongoDB es opcional. Si lo utilizas, restringe el acceso de red y crea un usuario con los mínimos permisos.
+- Todas las operaciones de mercado requieren una acción explícita. El scheduler solo envía notificaciones y nunca compra o vende automáticamente.
 
-## Troubleshooting
+## Solución de problemas
 
-### The webhook returns `401 Unauthorized`
+### El webhook devuelve `401 Unauthorized`
 
-Run `set-webhook` again after changing `TELEGRAM_WEBHOOK_SECRET`:
+Vuelve a registrar el webhook después de cambiar `TELEGRAM_WEBHOOK_SECRET`:
 
 ```bash
 docker compose run --rm futmondojobs \
   python manage.py set-webhook https://futmondo.example.com
 ```
 
-### The bot does not answer
+### El bot no responde
 
 ```bash
 docker compose logs --tail=200 futmondojobs
 curl https://futmondo.example.com/health
 ```
 
-Confirm that your chat ID is present in `TELEGRAM_ALLOWED_CHAT_IDS`.
+Comprueba que el ID del chat está incluido en `TELEGRAM_ALLOWED_CHAT_IDS`.
 
-### MongoDB cannot connect
+### MongoDB no puede conectarse
 
-MongoDB is only a shared token cache. Remove or empty `MONGODB_URI` and restart; the application will safely use process memory:
+MongoDB solo se usa como caché compartida para el token. Elimina o vacía `MONGODB_URI` y reinicia; la aplicación utilizará memoria local de forma segura:
 
 ```bash
 docker compose up -d --force-recreate
 ```
 
-### Futmondo returns `not_found`
+### Futmondo devuelve `not_found`
 
-Open `/api/championships`. If several championships are active, copy the desired championship and team IDs into `.env`, then restart both containers.
+Abre `/api/championships`. Si existen varios campeonatos activos, copia los IDs del campeonato y del equipo deseados en `.env` y reinicia los dos contenedores.
 
-## Disclaimer
+## Aviso legal
 
-This project is not affiliated with or endorsed by Futmondo or Telegram. Use it responsibly and at your own risk, especially when enabling trading actions.
+Este proyecto no está afiliado ni respaldado por Futmondo o Telegram. Utilízalo de forma responsable y bajo tu propio riesgo, especialmente al habilitar operaciones de mercado.
 
 <div align="center">
 
-Built for people who would rather manage their fantasy team from Telegram. ⚽📲
+Creado para quienes prefieren gestionar su equipo de fantasy desde Telegram. ⚽📲
 
 </div>
