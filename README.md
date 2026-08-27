@@ -10,7 +10,7 @@ Alertas de mercado, finanzas del equipo, pujas interactivas, venta de jugadores,
 [![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white)](https://core.telegram.org/bots)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
-[![Tests](https://img.shields.io/badge/tests-10%20superados-success)](#calidad-y-pruebas)
+[![CI](https://github.com/lluc898/futmondojobs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/lluc898/futmondojobs/actions/workflows/ci.yml)
 
 </div>
 
@@ -20,6 +20,20 @@ Alertas de mercado, finanzas del equipo, pujas interactivas, venta de jugadores,
 ## ¿Qué es este proyecto?
 
 **Bot de Telegram para Futmondo** conecta un campeonato de Futmondo con un chat privado de Telegram. En lugar de abrir constantemente la aplicación de Futmondo, permite consultar el mercado, revisar el presupuesto, realizar o modificar pujas con botones, gestionar la venta de jugadores y recibir notificaciones automáticas mediante cron.
+
+## El bot en acción
+
+Las siguientes capturas recrean un uso real del bot con nombres, equipos, importes e identificadores sustituidos por datos ficticios.
+
+| Mercado y botones de puja | Confirmación de puja | Presupuesto del equipo |
+| :---: | :---: | :---: |
+| <img src="docs/images/telegram-market.png" alt="Alerta de mercado de Futmondo con botones de puja en Telegram" width="100%"> | <img src="docs/images/telegram-bid.png" alt="Confirmación de una puja de Futmondo en Telegram" width="100%"> | <img src="docs/images/telegram-budget.png" alt="Presupuesto de un equipo de Futmondo consultado desde Telegram" width="100%"> |
+
+## Uso real
+
+Este bot sí se utiliza en una liga real de Futmondo. En la práctica ha evitado la tarea repetitiva de abrir Futmondo para revisar el mercado, calcular manualmente los incrementos del 5 %, 10 % o 15 % y volver a consultar el dinero retenido y el saldo después de cada puja: esas operaciones quedan centralizadas en Telegram mediante botones y respuestas inmediatas.
+
+No se atribuyen métricas de tiempo o productividad porque no se han medido de forma fiable; el beneficio documentado es la eliminación de esos pasos manuales.
 
 ## Funcionalidades principales
 
@@ -323,7 +337,7 @@ python -m ruff check .
 python -m compileall -q .
 ```
 
-Estado actual: **10 pruebas superadas**.
+El estado actualizado de Ruff, las pruebas y la compilación se publica en la insignia de **CI** y en el historial de [GitHub Actions](https://github.com/lluc898/futmondojobs/actions/workflows/ci.yml).
 
 ## Recomendaciones de seguridad
 
