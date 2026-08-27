@@ -2,8 +2,12 @@ data.py
 .env
 launch.json
 .github/
+.reference-futmondo-utils/
+.pytest_cache/
+.ruff_cache/
+.coverage
 
-# Archivos compilados de Python
+# Python bytecode
 __pycache__/
 *.pyc
 *.pyo

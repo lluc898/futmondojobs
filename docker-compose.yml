@@ -1,17 +1,28 @@
-version: '3.8'
-
-networks:
-  npm-network:
-    external: true  # usa la red que ya creaste para NPM
-
 services:
   futmondojobs:
     build: .
     container_name: futmondojobs
-    env_file:
-      - .env
+    env_file: .env
     ports:
       - "5000:5000"
-    restart: always
+    restart: unless-stopped
     networks:
       - npm-network
+
+  scheduler:
+    build: .
+    container_name: futmondojobs-scheduler
+    command: ["python", "manage.py", "scheduler"]
+    env_file: .env
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+    networks:
+      - npm-network
+    depends_on:
+      futmondojobs:
+        condition: service_healthy
+
+networks:
+  npm-network:
+    external: true
