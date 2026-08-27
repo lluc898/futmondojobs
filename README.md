@@ -21,8 +21,6 @@ Alertas de mercado, finanzas del equipo, pujas interactivas, venta de jugadores,
 
 **Bot de Telegram para Futmondo** conecta un campeonato de Futmondo con un chat privado de Telegram. En lugar de abrir constantemente la aplicación de Futmondo, permite consultar el mercado, revisar el presupuesto, realizar o modificar pujas con botones, gestionar la venta de jugadores y recibir notificaciones automáticas mediante cron.
 
-El proyecto está inspirado en [vicenteqa/futmondo-utils](https://github.com/vicenteqa/futmondo-utils), integrando sus flujos más útiles en un servicio Python mantenible, seguro y probado.
-
 ## Funcionalidades principales
 
 | Área | Funcionalidades |
